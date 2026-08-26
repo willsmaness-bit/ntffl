@@ -5,46 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Votes · Sunday Scaries</title>
 <link rel="stylesheet" href="styles.css"/>
+<style>
+select, button { font: inherit; }
+select { width: 100%; min-height: 44px; padding: 8px; background: #fbf8ef; border: 1px solid #ddd4bf; }
+fieldset.vote { border: 1px solid #ddd4bf; margin: 16px 0; padding: 16px; background: #fbf8ef; }
+label.choice { display: flex; gap: 10px; align-items: flex-start; min-height: 44px; padding: 8px 0; }
+label.choice input { margin-top: 4px; }
+#ballot .btn { margin-top: 12px; border: 0; cursor: pointer; }
+</style>
 </head>
 <body>
 <header id="site-header"></header>
 <main class="doc">
-<p class="kicker">Open items · vote at the draft</p>
+<p class="kicker">Founding votes · 2026</p>
 <h1>Votes</h1>
-<p>Posted so the room can see them before 8:15. Nothing here is adopted until the table votes. Sleeper settings stay as they are until then.</p>
-
-<article class="vote">
-<p class="status">Open</p>
-<h2>Keepers</h2>
-<p>Sleeper already allows 2 keepers. No salary rule is posted. Options: no keepers this year · 1 keeper · 2 keepers. If keepers: prior auction price + $5, prior price + $10, or a flat $20.</p>
-</article>
-
-<article class="vote">
-<p class="status">Open</p>
-<h2>Trade FAAB</h2>
-<p>Sleeper will let FAAB move in a trade. Cap stays $100 unless the commissioner raises it. Vote: allow FAAB in trades, or ban it.</p>
-</article>
-
-<article class="vote">
-<p class="status">Open</p>
-<h2>Dues and payouts</h2>
-<p>Amount, when it is due, how the pot splits. Not a Sleeper setting.</p>
-</article>
-
-<article class="vote">
-<p class="status">Open</p>
-<h2>Last-place stakes</h2>
-<p>Sleeper has no loser bracket posted. Four-team toilet bracket in weeks 15–16 was discussed. Vote whether it exists and what last place owes.</p>
-</article>
-
-<article class="vote">
-<p class="status">Open</p>
-<h2>Vice commissioner</h2>
-<p>Who rules if the commissioner’s team is in the dispute.</p>
-</article>
+<p>Eight managers. One ballot each. Cast it here before the first nomination. Nothing is law until it is on this tally.</p>
+<form id="ballot"></form>
+<section id="results" style="margin-top:36px"></section>
 </main>
 <footer id="site-footer"></footer>
 <script src="js/league.js"></script>
 <script src="js/site.js"></script>
+<script src="js/votes.js"></script>
 </body>
 </html>
