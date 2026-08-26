@@ -1,2 +1,3 @@
-# ntffl
-North Texas Fantasy Football League — inaugural 2026 clubhouse
+# North Texas Fantasy Football League
+
+Inaugural season 2026. Sleeper auction. Public clubhouse.
