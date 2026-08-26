@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Print · Sunday Scaries draft card</title>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+@media print {
+  header, footer, .cta-row, .no-print { display:none !important; }
+  body { background:#fff; }
+  main { padding:0; max-width:none; }
+}
+.sheet { border:1px solid #ddd4bf; padding:20px; background:#fff; }
+.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+@media (max-width:700px){ .grid2 { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header id="site-header"></header>
+<main class="doc">
+<p class="kicker no-print">One page · print this</p>
+<h1>Draft table card</h1>
+<p class="no-print">Print from your phone or laptop. Bring copies to Haute Poppies.</p>
+<div class="cta-row no-print"><button class="btn btn-gold" onclick="window.print()">Print</button></div>
+<div class="sheet">
+<p class="kicker">Sunday Scaries · Thu Aug 27 · 8:15 PM CT · Haute Poppies</p>
+<p>Sleeper auction. $200. $1 minimum. Leave $1 per empty drafted spot. Half-PPR. 17 drafted. IR empty. FAAB $100 after. 4 playoffs, week 16. Join: sleeper.com/i/E8jA197o5bz47</p>
+<dl class="roster">
+<div><dt>QB</dt><dd>1</dd></div>
+<div><dt>RB</dt><dd>2</dd></div>
+<div><dt>WR</dt><dd>2</dd></div>
+<div><dt>TE</dt><dd>1</dd></div>
+<div><dt>FLEX</dt><dd>2</dd></div>
+<div><dt>SUPERFLEX</dt><dd>1</dd></div>
+<div><dt>K</dt><dd>1</dd></div>
+<div><dt>D/ST</dt><dd>1</dd></div>
+<div><dt>BENCH</dt><dd>6</dd></div>
+<div><dt>IR</dt><dd>1</dd></div>
+</dl>
+<div class="grid2" style="margin-top:20px">
+<div>
+<h2>Room</h2>
+<p>Brad Bell<br>Connor Zetsche<br>Barry Rockwood<br>Ben Bankhead<br>Kevin Kutch<br>Will Maness (commish)<br>Jacob Williamson<br>Zach Cabra</p>
+</div>
+<div>
+<h2>Vote first</h2>
+<p>Keepers: none / 1 / 2. Salary +$5, +$10, or $20.<br>Trade FAAB: allow or ban.<br>Dues and payouts.<br>Last-place stakes.<br>Vice commissioner.</p>
+</div>
+</div>
+<p>Auction dollars are not FAAB. Sleeper is the live board. sundayscariesffl.com</p>
+</div>
+</main>
+<footer id="site-footer"></footer>
+<script src="js/league.js"></script>
+<script src="js/site.js"></script>
+</body>
+</html>
