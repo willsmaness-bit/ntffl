@@ -3,7 +3,7 @@ window.LEAGUE = {
   shortName: "Sunday Scaries",
   sleeperName: "Sunday scaries",
   season: 2026,
-  seasonLabel: "Inaugural Season — 2026",
+  seasonLabel: "Inaugural Season \u2014 2026",
   commissioner: "Will Maness",
   viceCommissioner: "Ben Bankhead",
   sleeper: {
@@ -37,8 +37,9 @@ window.LEAGUE = {
     flex: 2,
     superflex: 1,
     keepers2026: false,
-    entryFee: "TBD",
-    lastPlacePunishment: "TBD",
+    entryFee: 30,
+    lastPlacePunishment: "Modified NFL combine",
+    weeklyPunishment: "Lowest weekly score shotguns a beer in a selfie and sends it to the group",
     payoutFirst: 80,
     payoutSecond: 20
   },
@@ -47,12 +48,12 @@ window.LEAGUE = {
     ["RB", 2, "Running back"],
     ["WR", 2, "Wide receiver"],
     ["TE", 1, "Tight end"],
-    ["FLEX", 2, "Flex · RB / WR / TE"],
-    ["SUPERFLEX", 1, "Superflex · QB / RB / WR / TE"],
+    ["FLEX", 2, "Flex \u00b7 RB / WR / TE"],
+    ["SUPERFLEX", 1, "Superflex \u00b7 QB / RB / WR / TE"],
     ["K", 1, "Kicker"],
     ["DST", 1, "D / ST"],
     ["BN", 5, "Bench"],
-    ["IR", 1, "IR · empty at draft"]
+    ["IR", 1, "IR \u00b7 empty at draft"]
   ],
   managers: [
     "Brad Bell",
