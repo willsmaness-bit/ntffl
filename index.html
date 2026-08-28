@@ -4,8 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sunday Scaries FFL</title>
-  <meta name="description" content="8-team half-PPR superflex auction. $30 buy-in. $200 auction. Join on Sleeper." />
-  <link rel="stylesheet" href="styles.css?v=4" />
+  <link rel="stylesheet" href="styles.css?v=6" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 </head>
 <body>
@@ -15,71 +14,44 @@
       <div class="hero-inner">
         <p class="kicker">Inaugural season · 2026</p>
         <h1>Sunday Scaries</h1>
-        <p class="lede">8-team half-PPR superflex. $30 buy-in. $200 auction. Paid on Sleeper.</p>
+        <p class="lede">Auction complete. 128 picks. Rosters live on Sleeper.</p>
         <div class="cta-row">
-          <a class="btn btn-sleeper" data-sleeper-join target="_blank" rel="noopener">Join / Open in Sleeper</a>
-          <a class="btn btn-gold" href="draft.html">Draft HQ</a>
+          <a class="btn btn-sleeper" data-sleeper-join target="_blank" rel="noopener">Open in Sleeper</a>
+          <a class="btn btn-gold" href="teams.html">Rosters</a>
+          <a class="btn btn-ghost" href="draft.html">Results</a>
           <a class="btn btn-ghost" href="rules.html">Rules</a>
-          <a class="btn btn-ghost" href="votes.html">Board</a>
         </div>
       </div>
     </section>
     <section class="wrap">
-      <p class="kicker" style="color:var(--augusta)">The clubhouse</p>
-      <h2>Posted</h2>
-      <p class="note">Sleeper is the live board. Payments run through Sleeper.</p>
-      <aside class="board" style="margin-top:18px">
+      <p class="kicker" style="color:var(--augusta)">The auction</p>
+      <h2>Haute Poppies · Aug 27</h2>
+      <p class="note">$200 budgets. Prices from Sleeper.</p>
+      <div id="spend-live" style="margin-top:18px"></div>
+      <div id="picks-live" style="margin-top:18px"></div>
+    </section>
+    <section class="wrap">
+      <p class="kicker" style="color:var(--augusta)">Posted</p>
+      <aside class="board">
         <h2>Board</h2>
         <dl>
-          <div class="row"><dt>Draft</dt><dd>Thu, Aug 27 · 8:15 PM CT</dd></div>
-          <div class="row"><dt>Room</dt><dd>Haute Poppies Floral</dd></div>
-          <div class="row"><dt>Platform</dt><dd>Sleeper auction</dd></div>
-          <div class="row"><dt>Budget</dt><dd>$200 · $1 min</dd></div>
-          <div class="row"><dt>Scoring</dt><dd>Half-PPR · Superflex</dd></div>
-          <div class="row"><dt>Field</dt><dd>8 teams · 16 drafted · 4 playoffs</dd></div>
-          <div class="row"><dt>Officers</dt><dd>Will Maness · Ben Bankhead</dd></div>
+          <div class="row"><dt>Draft</dt><dd>Complete · Aug 27</dd></div>
           <div class="row"><dt>Entry fee</dt><dd>$30 on Sleeper</dd></div>
           <div class="row"><dt>Payouts</dt><dd>1st 80% · 2nd 20%</dd></div>
           <div class="row"><dt>Weekly low</dt><dd>Shotgun selfie to the group</dd></div>
           <div class="row"><dt>Last place</dt><dd>Modified NFL combine</dd></div>
-          <div class="row"><dt>Keepers 2026</dt><dd>None</dd></div>
         </dl>
       </aside>
     </section>
     <section class="wrap">
-      <p class="kicker" style="color:var(--augusta)">Starting lineup</p>
-      <h2>Sixteen drafted. IR stays empty.</h2>
-      <dl class="roster">
-        <div><dt>Quarterback</dt><dd>1</dd></div>
-        <div><dt>Running back</dt><dd>2</dd></div>
-        <div><dt>Wide receiver</dt><dd>2</dd></div>
-        <div><dt>Tight end</dt><dd>1</dd></div>
-        <div><dt>Flex · RB / WR / TE</dt><dd>2</dd></div>
-        <div><dt>Superflex</dt><dd>1</dd></div>
-        <div><dt>Kicker</dt><dd>1</dd></div>
-        <div><dt>D / ST</dt><dd>1</dd></div>
-        <div><dt>Bench</dt><dd>5</dd></div>
-        <div><dt>IR</dt><dd>1</dd></div>
-        <div><dt>Drafted</dt><dd>16</dd></div>
-      </dl>
-    </section>
-    <section class="wrap">
       <p class="kicker" style="color:var(--augusta)">The field</p>
-      <h2>Founding managers</h2>
-      <div class="managers">
-        <article><h3>Brad Bell</h3></article>
-        <article><h3>Connor Zetsche</h3></article>
-        <article><h3>Barry Rockwood</h3></article>
-        <article><h3>Ben Bankhead</h3><p class="note">Vice commissioner</p></article>
-        <article><h3>Kevin Kutch</h3></article>
-        <article><h3>Will Maness</h3><p class="note">Commissioner</p></article>
-        <article><h3>Jacob Williamson</h3></article>
-        <article><h3>Zach Cabra</h3></article>
-      </div>
+      <h2>Live from Sleeper</h2>
+      <div class="managers" id="field-live"></div>
     </section>
   </main>
   <footer id="site-footer"></footer>
-  <script src="js/league.js?v=4"></script>
-  <script src="js/site.js?v=4"></script>
+  <script src="js/league.js?v=6"></script>
+  <script src="js/site.js?v=6"></script>
+  <script src="js/sleeper.js?v=6"></script>
 </body>
 </html>
