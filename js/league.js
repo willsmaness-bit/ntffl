@@ -13,6 +13,16 @@ window.LEAGUE = {
     inviteCode: "E8jA197o5bz47",
     username: "billsmaness"
   },
+  handles: {
+    billsmaness: "Will Maness",
+    BankCity: "Ben Bankhead",
+    BarryRockwood: "Barry Rockwood",
+    jrywilliamson: "Jacob Williamson",
+    bbell91: "Brad Bell",
+    ChaBoiZDog: "Connor Zetsche",
+    kujumz: "Kevin Kutch",
+    Chupagolf10: "Zach Cabra"
+  },
   draft: {
     whenLabel: "Thursday, August 27, 2026",
     timeLabel: "8:15 PM Central",
@@ -20,7 +30,8 @@ window.LEAGUE = {
     type: "Sleeper live auction",
     budget: 200,
     minBid: 1,
-    rounds: 16
+    rounds: 16,
+    status: "complete"
   },
   format: {
     teams: 8,
@@ -43,18 +54,6 @@ window.LEAGUE = {
     payoutFirst: 80,
     payoutSecond: 20
   },
-  roster: [
-    ["QB", 1, "Quarterback"],
-    ["RB", 2, "Running back"],
-    ["WR", 2, "Wide receiver"],
-    ["TE", 1, "Tight end"],
-    ["FLEX", 2, "Flex \u00b7 RB / WR / TE"],
-    ["SUPERFLEX", 1, "Superflex \u00b7 QB / RB / WR / TE"],
-    ["K", 1, "Kicker"],
-    ["DST", 1, "D / ST"],
-    ["BN", 5, "Bench"],
-    ["IR", 1, "IR \u00b7 empty at draft"]
-  ],
   managers: [
     "Brad Bell",
     "Connor Zetsche",
