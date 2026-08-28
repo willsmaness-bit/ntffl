@@ -12,13 +12,11 @@
     SEA: { name: 'Seahawks', pos: 'DEF' },
     HOU: { name: 'Texans', pos: 'DEF' }
   };
-
   const get = (path) => fetch(api + path).then((r) => {
     if (!r.ok) throw new Error(path);
     return r.json();
   });
-
-  const nameOf = (u) => (L.handles && L.handles[u.display_name]) || u.display_name;
+  const nameOf = (u) => (L.handles && L.handles[u.display_name]) || u.display_name || 'Open chair';
   const teamOf = (u) => ((u.metadata || {}).team_name || '').trim();
 
   window.SCARIES = window.SCARIES || {};
@@ -44,74 +42,113 @@
       if (extra[pid]) return { name: extra[pid].name, pos: extra[pid].pos, amount: (meta[pid] || {}).amount || 0 };
       return { name: pid, pos: '', amount: 0 };
     };
-    return { users, rosters, picks, byId, prices, label, nameOf, teamOf };
+    const mgr = (rosterId) => {
+      const r = rosters.find((x) => x.roster_id === rosterId) || {};
+      const u = byId[r.owner_id] || {};
+      return { u, name: nameOf(u), team: teamOf(u), roster: r };
+    };
+    return { users, rosters, picks, byId, prices, label, nameOf, teamOf, mgr };
   };
 
-  const teamsRoot = document.getElementById('teams-live');
-  const fieldRoot = document.getElementById('field-live');
-  const standRoot = document.getElementById('standings-live');
-  const spendRoot = document.getElementById('spend-live');
-  const picksRoot = document.getElementById('picks-live');
-  if (!teamsRoot && !fieldRoot && !standRoot && !spendRoot && !picksRoot) return;
+  window.SCARIES.pairWeek = function (rows) {
+    const by = {};
+    (rows || []).forEach((row) => {
+      const id = row.matchup_id;
+      if (!id) return;
+      (by[id] = by[id] || []).push(row);
+    });
+    return Object.keys(by).sort((a,b)=>a-b).map((id) => by[id]);
+  };
 
-  window.SCARIES.load().then((data) => {
-    const ownerOfRoster = {};
-    data.rosters.forEach((r) => { ownerOfRoster[r.roster_id] = data.byId[r.owner_id] || {}; });
+  const roots = {
+    teams: document.getElementById('teams-live'),
+    field: document.getElementById('field-live'),
+    stand: document.getElementById('standings-live'),
+    spend: document.getElementById('spend-live'),
+    picks: document.getElementById('picks-live'),
+    week: document.getElementById('week-live'),
+    match: document.getElementById('matchups-live'),
+    records: document.getElementById('records-live')
+  };
+  if (!Object.values(roots).some(Boolean)) return;
 
-    if (fieldRoot) {
-      fieldRoot.innerHTML = data.rosters.map((r) => {
+  const fail = (el) => { if (el) el.innerHTML = '<p class="note">Sleeper did not load. Open the league in the app.</p>'; };
+
+  window.SCARIES.load().then(async (data) => {
+    if (roots.field) {
+      roots.field.innerHTML = data.rosters.map((r) => {
         const u = data.byId[r.owner_id] || {};
-        const mgr = data.nameOf(u);
-        const team = data.teamOf(u);
-        const spent = data.prices[r.roster_id] || 0;
-        const role = mgr === L.commissioner ? '<p class="note">Commissioner</p>' : mgr === L.viceCommissioner ? '<p class="note">Vice commissioner</p>' : '';
-        return '<article><h3>' + mgr + '</h3>' + (team ? '<p class="note">' + team + '</p>' : '') + '<p class="note">$' + spent + ' spent</p>' + role + '</article>';
+        const role = data.nameOf(u) === L.commissioner ? '<p class="note">Commissioner</p>' : data.nameOf(u) === L.viceCommissioner ? '<p class="note">Vice commissioner</p>' : '';
+        return '<article><h3>' + data.nameOf(u) + '</h3>' + (data.teamOf(u) ? '<p class="note">' + data.teamOf(u) + '</p>' : '') + '<p class="note">$' + (data.prices[r.roster_id]||0) + ' spent</p>' + role + '</article>';
       }).join('');
     }
-    if (standRoot) {
-      const rows = data.rosters.slice().sort((a,b) => {
-        const as = a.settings || {}, bs = b.settings || {};
-        return (bs.wins||0)-(as.wins||0) || (bs.fpts||0)-(as.fpts||0);
-      });
-      standRoot.innerHTML = '<aside class="board"><dl>' + rows.map((r) => {
-        const u = data.byId[r.owner_id] || {};
+    if (roots.stand) {
+      const rows = data.rosters.slice().sort((a,b) => ((b.settings||{}).wins||0)-((a.settings||{}).wins||0) || ((b.settings||{}).fpts||0)-((a.settings||{}).fpts||0));
+      roots.stand.innerHTML = '<aside class="board"><dl>' + rows.map((r) => {
         const s = r.settings || {};
-        return '<div class="row"><dt>' + data.nameOf(u) + '</dt><dd>' + (s.wins||0) + '-' + (s.losses||0) + '</dd></div>';
+        return '<div class="row"><dt>' + data.mgr(r.roster_id).name + '</dt><dd>' + (s.wins||0) + '-' + (s.losses||0) + (s.ties ? '-' + s.ties : '') + '</dd></div>';
       }).join('') + '</dl></aside>';
     }
-    if (spendRoot) {
+    if (roots.spend) {
       const rows = data.rosters.slice().sort((a,b) => (data.prices[b.roster_id]||0)-(data.prices[a.roster_id]||0));
-      spendRoot.innerHTML = '<aside class="board"><h2>Auction spend</h2><dl>' + rows.map((r) => {
-        const u = data.byId[r.owner_id] || {};
-        return '<div class="row"><dt>' + data.nameOf(u) + '</dt><dd>$' + (data.prices[r.roster_id]||0) + '</dd></div>';
-      }).join('') + '</dl></aside>';
+      roots.spend.innerHTML = '<aside class="board"><h2>Auction spend</h2><dl>' + rows.map((r) => '<div class="row"><dt>' + data.mgr(r.roster_id).name + '</dt><dd>$' + (data.prices[r.roster_id]||0) + '</dd></div>').join('') + '</dl></aside>';
     }
-    if (picksRoot) {
-      const top = (data.picks || []).slice().sort((a,b) => Number((b.metadata||{}).amount||0)-Number((a.metadata||{}).amount||0)).slice(0,20);
-      picksRoot.innerHTML = '<aside class="board"><h2>Highest prices</h2><dl>' + top.map((p) => {
+    if (roots.picks) {
+      const top = (data.picks||[]).slice().sort((a,b)=>Number((b.metadata||{}).amount||0)-Number((a.metadata||{}).amount||0)).slice(0,20);
+      roots.picks.innerHTML = '<aside class="board"><h2>Highest prices</h2><dl>' + top.map((p) => {
         const md = p.metadata || {};
         const nm = ((md.first_name||'')+' '+(md.last_name||'')).trim() || p.player_id;
-        const u = data.byId[p.picked_by] || ownerOfRoster[p.roster_id] || {};
-        return '<div class="row"><dt>' + nm + (md.position ? ' · ' + md.position : '') + '</dt><dd>$' + (md.amount||0) + ' · ' + data.nameOf(u) + '</dd></div>';
+        return '<div class="row"><dt>' + nm + (md.position ? ' · ' + md.position : '') + '</dt><dd>$' + (md.amount||0) + ' · ' + data.mgr(p.roster_id).name + '</dd></div>';
       }).join('') + '</dl></aside>';
     }
-    if (teamsRoot) {
-      teamsRoot.innerHTML = data.rosters.map((r) => {
+    if (roots.teams) {
+      roots.teams.innerHTML = data.rosters.map((r) => {
         const u = data.byId[r.owner_id] || {};
-        const mgr = data.nameOf(u);
-        const team = data.teamOf(u);
-        const spent = data.prices[r.roster_id] || 0;
-        const players = (r.players || []).slice().sort((a,b) => (data.label(b).amount||0)-(data.label(a).amount||0)).map((pid) => {
+        const players = (r.players||[]).slice().sort((a,b)=>(data.label(b).amount||0)-(data.label(a).amount||0)).map((pid) => {
           const p = data.label(pid);
-          const pos = p.pos ? p.pos + ' · ' : '';
-          return '<div class="row"><dt>' + pos + p.name + '</dt><dd>' + (p.amount ? '$' + p.amount : '') + '</dd></div>';
+          return '<div class="row"><dt>' + (p.pos ? p.pos + ' · ' : '') + p.name + '</dt><dd>' + (p.amount ? '$'+p.amount : '') + '</dd></div>';
         }).join('');
-        return '<article class="vote"><p class="status">' + (team || '@' + (u.display_name || '')) + '</p><h2>' + mgr + '</h2><p>' + (r.players||[]).length + ' players · $' + spent + ' spent</p><dl>' + players + '</dl></article>';
+        return '<article class="vote"><p class="status">' + (data.teamOf(u) || '@' + (u.display_name||'')) + '</p><h2>' + data.nameOf(u) + '</h2><p>' + (r.players||[]).length + ' players · $' + (data.prices[r.roster_id]||0) + ' spent</p><dl>' + players + '</dl></article>';
       }).join('');
     }
-  }).catch(() => {
-    [teamsRoot, fieldRoot, standRoot, spendRoot, picksRoot].forEach((el) => {
-      if (el) el.innerHTML = '<p class="note">Sleeper did not load. Open the league in the app.</p>';
-    });
-  });
+    if (roots.records) {
+      const priced = (data.picks||[]).map((p) => {
+        const md = p.metadata || {};
+        return { name: ((md.first_name||'')+' '+(md.last_name||'')).trim() || p.player_id, pos: md.position||'', amount: Number(md.amount||0), owner: data.mgr(p.roster_id).name };
+      }).sort((a,b)=>b.amount-a.amount);
+      const byPos = {};
+      priced.forEach((p) => { if (!byPos[p.pos] || p.amount > byPos[p.pos].amount) byPos[p.pos] = p; });
+      const rows = [['Highest overall', priced[0]]].concat(Object.keys(byPos).sort().map((pos) => [pos + ' high', byPos[pos]]));
+      roots.records.innerHTML = '<aside class="board"><h2>Auction records</h2><dl>' + rows.filter(([,p])=>p).map(([lab,p]) => '<div class="row"><dt>' + lab + '</dt><dd>$' + p.amount + ' · ' + p.name + ' · ' + p.owner + '</dd></div>').join('') + '</dl></aside><p class="note">Season records stay empty until Week 1 is scored.</p>';
+    }
+
+    const paintWeek = (title, rows, target) => {
+      const pairs = window.SCARIES.pairWeek(rows);
+      if (!pairs.length) { target.innerHTML = '<p class="note">No pairings posted yet.</p>'; return; }
+      target.innerHTML = '<aside class="board"><h2>' + title + '</h2>' + pairs.map((pair) => {
+        const a = pair[0] || {}, b = pair[1] || {};
+        const A = data.mgr(a.roster_id), B = data.mgr(b.roster_id);
+        const left = A.name + (a.points ? ' · ' + a.points : '');
+        const right = B.name + (b.points ? ' · ' + b.points : '');
+        return '<div class="row"><dt>' + left + '</dt><dd>' + right + '</dd></div>';
+      }).join('') + '</aside>';
+    };
+
+    if (roots.week) {
+      get('/league/' + L.sleeper.leagueId + '/matchups/1').then((rows) => paintWeek('Week 1', rows, roots.week)).catch(() => fail(roots.week));
+    }
+    if (roots.match) {
+      const weeks = Array.from({length: 15}, (_,i) => i+1);
+      Promise.all(weeks.map((w) => get('/league/' + L.sleeper.leagueId + '/matchups/' + w).then((rows) => ({w, rows})).catch(() => ({w, rows: []})))).then((all) => {
+        roots.match.innerHTML = all.filter((x) => x.rows && x.rows.length).map((x) => {
+          const id = 'w'+x.w;
+          const box = document.createElement('div');
+          box.id = id;
+          const hold = document.createElement('div');
+          paintWeek('Week ' + x.w, x.rows, hold);
+          return hold.innerHTML;
+        }).join('');
+      }).catch(() => fail(roots.match));
+    }
+  }).catch(() => Object.values(roots).forEach(fail));
 })();
