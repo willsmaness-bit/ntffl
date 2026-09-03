@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sunday Scaries FFL</title>
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=9" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 </head>
 <body>
@@ -12,46 +12,49 @@
   <main id="main">
     <section class="hero">
       <div class="hero-inner">
-        <p class="kicker">Inaugural season · 2026</p>
+        <p class="kicker">Sunday Scaries · Sleeper · 2026</p>
         <h1>Sunday Scaries</h1>
-        <p class="lede">Auction complete. 128 picks. Rosters live on Sleeper.</p>
+        <p class="lede">Week 1. $30 buy-in. No keepers. Last place does a modified NFL combine.</p>
         <div class="cta-row">
           <a class="btn btn-sleeper" data-sleeper-join target="_blank" rel="noopener">Open in Sleeper</a>
-          <a class="btn btn-gold" href="teams.html">Rosters</a>
-          <a class="btn btn-ghost" href="draft.html">Results</a>
+          <a class="btn btn-gold" href="matchups.html">Matchups</a>
+          <a class="btn btn-ghost" href="teams.html">Rosters</a>
           <a class="btn btn-ghost" href="rules.html">Rules</a>
         </div>
       </div>
     </section>
     <section class="wrap">
-      <p class="kicker" style="color:var(--augusta)">The auction</p>
-      <h2>Haute Poppies · Aug 27</h2>
-      <p class="note">$200 budgets. Prices from Sleeper.</p>
-      <div id="spend-live" style="margin-top:18px"></div>
-      <div id="picks-live" style="margin-top:18px"></div>
+      <p class="kicker" style="color:var(--augusta)">This week</p>
+      <h2>Week 1 pairings</h2>
+      <p class="note">Live from Sleeper. Scores stay at zero until games post.</p>
+      <div id="week-live"></div>
+    </section>
+    <section class="wrap">
+      <p class="kicker" style="color:var(--augusta)">The field</p>
+      <h2>Rosters from Sleeper</h2>
+      <div class="managers" id="field-live"></div>
+      <p class="note">Full lists on Teams. Team names only if set in Sleeper.</p>
     </section>
     <section class="wrap">
       <p class="kicker" style="color:var(--augusta)">Posted</p>
       <aside class="board">
         <h2>Board</h2>
         <dl>
-          <div class="row"><dt>Draft</dt><dd>Complete · Aug 27</dd></div>
-          <div class="row"><dt>Entry fee</dt><dd>$30 on Sleeper</dd></div>
+          <div class="row"><dt>League</dt><dd>Sunday Scaries on Sleeper</dd></div>
+          <div class="row"><dt>Buy-in</dt><dd>$30</dd></div>
           <div class="row"><dt>Payouts</dt><dd>1st 80% · 2nd 20%</dd></div>
-          <div class="row"><dt>Weekly low</dt><dd>Shotgun selfie to the group</dd></div>
+          <div class="row"><dt>Keepers</dt><dd>None in 2026</dd></div>
           <div class="row"><dt>Last place</dt><dd>Modified NFL combine</dd></div>
+          <div class="row"><dt>Weekly low</dt><dd>Shotgun selfie to the group</dd></div>
+          <div class="row"><dt>Scoring</dt><dd>Half-PPR · Superflex</dd></div>
+          <div class="row"><dt>Playoffs</dt><dd>Top 4 · weeks 16–17</dd></div>
         </dl>
       </aside>
     </section>
-    <section class="wrap">
-      <p class="kicker" style="color:var(--augusta)">The field</p>
-      <h2>Live from Sleeper</h2>
-      <div class="managers" id="field-live"></div>
-    </section>
   </main>
   <footer id="site-footer"></footer>
-  <script src="js/league.js?v=6"></script>
-  <script src="js/site.js?v=6"></script>
-  <script src="js/sleeper.js?v=6"></script>
+  <script src="js/league.js?v=9"></script>
+  <script src="js/site.js?v=9"></script>
+  <script src="js/sleeper.js?v=9"></script>
 </body>
 </html>
