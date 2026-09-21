@@ -8,6 +8,7 @@
     'teams.html': 'Teams · Sunday Scaries',
     'standings.html': 'Standings · Sunday Scaries',
     'matchups.html': 'Matchups · Sunday Scaries',
+    'stats.html': 'Tape · Sunday Scaries',
     'playoffs.html': 'Playoffs · Sunday Scaries',
     'toilet.html': 'Toilet Bowl · Sunday Scaries',
     'schedule.html': 'Schedule · Sunday Scaries',
@@ -16,7 +17,7 @@
     'records.html': 'Records · Sunday Scaries'
   };
   const title = titles[here] || 'Sunday Scaries FFL';
-  const desc = 'Sunday Scaries FFL. Auction complete. Rosters and matchups live from Sleeper.';
+  const desc = 'Sunday Scaries FFL. Week 1 scored on Sleeper. Injured draft capital tracked.';
   document.title = title;
   const head = document.head;
   const ensure = (sel, tag, attrs) => {
@@ -34,7 +35,7 @@
   ensure('meta[name="twitter:card"]', 'meta', {name:'twitter:card', content:'summary'});
   ensure('link[rel="icon"]', 'link', {rel:'icon', href:'favicon.svg', type:'image/svg+xml'});
 
-  const links = [['index.html','Home'],['teams.html','Teams'],['matchups.html','Matchups'],['standings.html','Standings'],['playoffs.html','Playoffs'],['toilet.html','Toilet'],['schedule.html','SOS'],['rules.html','Rules'],['gazette.html','Gazette']];
+  const links = [['index.html','Home'],['stats.html','Tape'],['teams.html','Teams'],['matchups.html','Matchups'],['standings.html','Standings'],['playoffs.html','Playoffs'],['toilet.html','Toilet'],['schedule.html','SOS'],['rules.html','Rules'],['gazette.html','Gazette']];
   const header = document.getElementById('site-header');
   if (header) {
     header.innerHTML = '<div class="bar"><a class="brand" href="index.html"><span class="brand-full">Sunday Scaries</span><span class="brand-short">Scaries</span><span class="subbrand">North Texas FFL</span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menu</button><nav id="nav">'+links.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
