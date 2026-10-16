@@ -66,9 +66,39 @@
 
 
   // Final weeks = every regular-season week before the current one.
+  // Final weeks from Supabase (weeks.status = final + matchups), same shape as the Sleeper path.
+  const finalsFromSupabase = function () {
+    const SB = window.SB;
+    if (!SB) return Promise.reject(new Error('no supabase'));
+    const q = 'league_id=eq.' + SB.leagueId + '&season=eq.' + L.season;
+    return Promise.all([
+      SB.select('weeks', 'select=week,status&' + q + '&status=eq.final&order=week'),
+      SB.select('matchups', 'select=week,platform_team_id,opponent_team_id,team_actual,opponent_actual&' + q + '&order=week')
+    ]).then(([wks, rows]) => {
+      const cap = (L.format && L.format.regularSeasonThrough) || 15;
+      const out = wks.map((x) => x.week).filter((wk) => wk <= cap).map((wk) => {
+        const mine = rows.filter((r) => r.week === wk);
+        const scores = mine.map((r) => ({ roster_id: Number(r.platform_team_id), pts: Number(r.team_actual || 0) }));
+        const games = mine.filter((r) => Number(r.platform_team_id) < Number(r.opponent_team_id)).map((r) => {
+          const a = { roster_id: Number(r.platform_team_id), points: Number(r.team_actual || 0) };
+          const b = { roster_id: Number(r.opponent_team_id), points: Number(r.opponent_actual || 0) };
+          const [w, l] = [a, b].sort((m, n) => n.points - m.points);
+          return { w, l, margin: w.points - l.points };
+        });
+        return { wk, games, scores };
+      }).filter((x) => x.games.length && x.scores.some((s) => s.pts > 0));
+      if (!out.length) throw new Error('supabase finals empty');
+      out.source = 'Supabase';
+      return out;
+    });
+  };
   window.SCARIES.finals = function () {
     if (window.SCARIES._finals) return window.SCARIES._finals;
-    window.SCARIES._finals = window.SCARIES.week().then((w) => {
+    window.SCARIES._finals = finalsFromSupabase().catch(() => finalsFromSleeper());
+    return window.SCARIES._finals;
+  };
+  const finalsFromSleeper = function () {
+    return window.SCARIES.week().then((w) => {
       const last = Math.min(w - 1, (L.format && L.format.regularSeasonThrough) || 15);
       const weeks = Array.from({length: Math.max(0, last)}, (_, i) => i + 1);
       return Promise.all(weeks.map((wk) => get('/league/' + L.sleeper.leagueId + '/matchups/' + wk).then((rows) => ({ wk, rows })).catch(() => ({ wk, rows: [] }))));
@@ -79,8 +109,7 @@
       });
       const scores = x.rows.map((r) => ({ roster_id: r.roster_id, pts: r.points || 0 }));
       return { wk: x.wk, games, scores };
-    }).filter((x) => x.scores.some((s) => s.pts > 0)));
-    return window.SCARIES._finals;
+    }).filter((x) => x.scores.some((s) => s.pts > 0))).then((a) => { a.source = 'Sleeper'; return a; });
   };
 
   window.SCARIES.pairWeek = function (rows) {
@@ -139,7 +168,8 @@
     if (roots.teams) {
       const paintTeams = (lite, wk) => {
         const P = (lite && lite.players) || {};
-        roots.teams.innerHTML = (lite ? '<p class="note">Injury tags from Sleeper as of ' + lite.updated.replace('T', ' ').replace('Z', ' UTC') + '. BYE means that NFL team is off in Week ' + wk + '.</p>' : '') + data.rosters.map((r) => {
+        const S = (lite && lite.src) || {};
+        roots.teams.innerHTML = (lite ? '<p class="note">Injury tags: ' + (S.inj === 'Supabase' ? 'Supabase (Sleeper feed)' : 'Sleeper snapshot ' + String(lite.updated).replace('T', ' ').replace('Z', ' UTC')) + '. Teams: ' + (S.team || 'players-lite') + '. Byes: ' + (S.bye || 'site table') + '. BYE means that NFL team is off in Week ' + wk + '.</p>' : '') + data.rosters.map((r) => {
           const u = data.byId[r.owner_id] || {};
           const players = (r.players||[]).slice().sort((a,b)=>(data.label(b).amount||0)-(data.label(a).amount||0)).map((pid) => {
             let p = data.label(pid);
@@ -155,8 +185,27 @@
         }).join('');
       };
       const liteUrl = 'data/players-lite.json?v=' + (L.cacheVersion || 1);
-      Promise.all([fetch(liteUrl).then((r) => r.ok ? r.json() : null).catch(() => null), window.SCARIES.week()])
-        .then(([lite, wk]) => paintTeams(lite, wk));
+      const ids = Array.from(new Set(data.rosters.flatMap((r) => (r.players || []).concat(r.reserve || []))));
+      const SB = window.SB;
+      const sbTry = (p) => (SB ? p().catch(() => null) : Promise.resolve(null));
+      Promise.all([
+        fetch(liteUrl).then((r) => r.ok ? r.json() : null).catch(() => null),
+        window.SCARIES.week(),
+        sbTry(() => SB.select('player_teams', 'select=player_id,nfl_team&platform=eq.sleeper&season=eq.' + L.season + '&player_id=' + SB.inList(ids))),
+        sbTry(() => SB.select('nfl_byes', 'select=nfl_team,bye_week&season=eq.' + L.season)),
+        sbTry(() => SB.select('player_injuries', 'select=week&platform=eq.sleeper&season=eq.' + L.season + '&order=week.desc&limit=1')
+          .then((w) => SB.select('player_injuries', 'select=player_id,injury_status&platform=eq.sleeper&season=eq.' + L.season + '&week=eq.' + w[0].week + '&player_id=' + SB.inList(ids)).catch(() => [])))
+      ]).then(([lite, wk, teams, byes, inj]) => {
+        // Start from the players-lite snapshot, then overlay whatever Supabase returned.
+        const src = { team: 'players-lite', bye: 'site table', inj: 'players-lite' };
+        lite = lite || { updated: '', players: {} };
+        const P = JSON.parse(JSON.stringify(lite.players || {}));
+        const touch = (pid) => (P[pid] = P[pid] || { n: pid, pos: '', team: '', inj: '' });
+        if (teams) { teams.forEach((t) => { if (t.nfl_team) touch(t.player_id).team = t.nfl_team; }); src.team = 'Supabase'; }
+        if (byes) { const b = {}; byes.forEach((x) => { b[x.nfl_team === 'WSH' ? 'WAS' : x.nfl_team] = Number(x.bye_week); }); window.LEAGUE.byes = b; src.bye = 'Supabase'; }
+        if (inj) { Object.values(P).forEach((p) => { p.inj = ''; }); inj.forEach((x) => { touch(x.player_id).inj = x.injury_status || ''; }); src.inj = 'Supabase'; }
+        paintTeams({ updated: lite.updated, players: P, src }, wk);
+      });
     }
 
     const f1 = (n) => Number(n || 0).toFixed(2);
@@ -211,7 +260,7 @@
             '<div class="row"><dt>Biggest margin</dt><dd>' + f1(big.margin) + ' · ' + nm(big.w.roster_id) + ' over ' + nm(big.l.roster_id) + ' · Week ' + big.wk + '</dd></div>' +
             '<div class="row"><dt>Closest game</dt><dd>' + f1(tight.margin) + ' · ' + nm(tight.w.roster_id) + ' over ' + nm(tight.l.roster_id) + ' · Week ' + tight.wk + '</dd></div>' +
             '<div class="row"><dt>Most points for</dt><dd>' + f1(top[1]) + ' · ' + nm(Number(top[0])) + '</dd></div>' +
-            '</dl></aside><p class="note">Final weeks only: 1 through ' + weeks[weeks.length - 1].wk + '. The live week counts once it goes final.</p>';
+            '</dl></aside><p class="note">Final weeks only: 1 through ' + weeks[weeks.length - 1].wk + '. The live week counts once it goes final. Source: ' + (weeks.source || 'Sleeper') + '.</p>';
         }
       }).catch(() => { fail(roots.recap); fail(roots.season); });
     }
