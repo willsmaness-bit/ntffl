@@ -1,4 +1,6 @@
 window.LEAGUE = {
+  // Cache-bust value. Must match the ?v= on every page (run tools/bump-version.sh to change it everywhere).
+  cacheVersion: 15,
   name: "Sunday Scaries FFL",
   shortName: "Sunday Scaries",
   sleeperName: "Sunday scaries",
@@ -54,6 +56,8 @@ window.LEAGUE = {
     payoutFirst: 80,
     payoutSecond: 20
   },
+  // 2026 NFL bye weeks (NFL.com/NBC/FOX bye lists, via Lizard Learner advisor data).
+  byes: {CAR:5,KC:5,CIN:6,DET:6,MIA:6,MIN:6,BUF:7,JAX:7,LAC:7,WAS:7,HOU:8,NO:8,NYG:8,SF:8,PIT:9,TEN:9,CHI:10,DEN:10,PHI:10,TB:10,ATL:11,CLE:11,GB:11,LAR:11,NE:11,SEA:11,BAL:13,IND:13,LV:13,NYJ:13,ARI:14,DAL:14},
   managers: [
     "Brad Bell",
     "Connor Zetsche",

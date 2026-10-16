@@ -4,16 +4,38 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Tape · Sunday Scaries</title>
-<link rel="stylesheet" href="styles.css?v=13"/>
+<meta name="description" content="Sunday Scaries FFL tape. Results, injured draft capital, and FAAB."/>
+<link rel="canonical" href="https://sundayscariesffl.com/stats.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Sunday Scaries FFL"/>
+<meta property="og:title" content="Tape · Sunday Scaries"/>
+<meta property="og:description" content="Sunday Scaries FFL tape. Results, injured draft capital, and FAAB."/>
+<meta property="og:url" content="https://sundayscariesffl.com/stats.html"/>
+<meta property="og:image" content="https://sundayscariesffl.com/favicon.svg"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Tape · Sunday Scaries"/>
+<meta name="twitter:description" content="Sunday Scaries FFL tape. Results, injured draft capital, and FAAB."/>
+<meta name="twitter:image" content="https://sundayscariesffl.com/favicon.svg"/>
+<link rel="icon" href="favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="styles.css?v=15"/>
 </head>
 <body>
 <header id="site-header"></header>
 <main class="doc">
-<p class="kicker">Week 1 scored · injury board live</p>
+<p class="kicker"><span data-week-label>In season</span> live · Week 1 tape below</p>
 <h1>Tape</h1>
 <p>Scores from Sleeper matchups. Injury dollars from current rosters plus Sleeper player injury_status. Draft capital is auction price. Waiver adds count as $0.</p>
 
+<h2><span data-week-label>This week</span> scoreboard</h2>
+<p class="note">Live from Sleeper. Scores move as games finish.</p>
+<div id="week-live"></div>
+
+<h2>Standings</h2>
+<div id="standings-live"></div>
+<p class="note">Live from Sleeper. Wins first, then points.</p>
+
 <h2>Injured draft capital</h2>
+<p class="note">Snapshot from Week 1. Not live.</p>
 <p>Official IR slot is the Sleeper reserve spot. Out/IR is unavailable today. At-risk adds Questionable. % is share of that team’s auction spend.</p>
 <aside class="board">
 <h2>Out + IR now</h2>
@@ -43,7 +65,7 @@
 </aside>
 <p class="note">Only two players sit in the official IR slot: Kyler Murray $3 (Will) and Jordan Mason $1 (Kevin). The rest of the money is Out on the active roster. Josh Jacobs (personal) is not counted as injured.</p>
 
-<h2>Standings</h2>
+<h2>Standings after Week 1</h2>
 <aside class="board"><dl>
 <div class="row"><dt>Brad Bell</dt><dd>1-0 · 172.70</dd></div>
 <div class="row"><dt>Barry Rockwood</dt><dd>1-0 · 162.50</dd></div>
@@ -65,7 +87,7 @@
 <p class="note">High 172.70 Brad. Shotgun 135.20 Jacob. League average 151.34.</p>
 
 <h2>All-play</h2>
-<p>If every team played every other team this week.</p>
+<p>If every team played every other team in Week 1.</p>
 <aside class="board"><dl>
 <div class="row"><dt>Brad Bell</dt><dd>7-0</dd></div>
 <div class="row"><dt>Barry Rockwood</dt><dd>6-1</dd></div>
@@ -115,7 +137,8 @@
 </div>
 </main>
 <footer id="site-footer"></footer>
-<script src="js/league.js?v=13"></script>
-<script src="js/site.js?v=13"></script>
+<script src="js/league.js?v=15"></script>
+<script src="js/site.js?v=15"></script>
+<script src="js/sleeper.js?v=15"></script>
 </body>
 </html>
