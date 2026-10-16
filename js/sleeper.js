@@ -50,6 +50,20 @@
     return { users, rosters, picks, byId, prices, label, nameOf, teamOf, mgr };
   };
 
+  // Current NFL week from Sleeper. Falls back to the last week with posted matchups, then Week 1.
+  window.SCARIES.week = function () {
+    if (window.SCARIES._week) return window.SCARIES._week;
+    window.SCARIES._week = get('/state/nfl').then((st) => {
+      const w = Number(st.display_week || st.week);
+      if (!w || w < 1) throw new Error('no week');
+      return Math.min(w, (L.format && L.format.championshipWeek) || 17);
+    }).catch(() => 1);
+    return window.SCARIES._week;
+  };
+  window.SCARIES.week().then((w) => {
+    document.querySelectorAll('[data-week-label]').forEach((el) => { el.textContent = 'Week ' + w; });
+  });
+
   window.SCARIES.pairWeek = function (rows) {
     const by = {};
     (rows || []).forEach((row) => {
@@ -86,7 +100,7 @@
       const rows = data.rosters.slice().sort((a,b) => ((b.settings||{}).wins||0)-((a.settings||{}).wins||0) || ((b.settings||{}).fpts||0)-((a.settings||{}).fpts||0));
       roots.stand.innerHTML = '<aside class="board"><dl>' + rows.map((r) => {
         const s = r.settings || {};
-        return '<div class="row"><dt>' + data.mgr(r.roster_id).name + '</dt><dd>' + (s.wins||0) + '-' + (s.losses||0) + (s.ties ? '-' + s.ties : '') + '</dd></div>';
+        return '<div class="row"><dt>' + data.mgr(r.roster_id).name + '</dt><dd>' + (s.wins||0) + '-' + (s.losses||0) + (s.ties ? '-' + s.ties : '') + ' · ' + ((s.fpts||0) + (s.fpts_decimal||0)/100).toFixed(1) + ' PF</dd></div>';
       }).join('') + '</dl></aside>';
     }
     if (roots.spend) {
@@ -119,7 +133,7 @@
       const byPos = {};
       priced.forEach((p) => { if (!byPos[p.pos] || p.amount > byPos[p.pos].amount) byPos[p.pos] = p; });
       const rows = [['Highest overall', priced[0]]].concat(Object.keys(byPos).sort().map((pos) => [pos + ' high', byPos[pos]]));
-      roots.records.innerHTML = '<aside class="board"><h2>Auction records</h2><dl>' + rows.filter(([,p])=>p).map(([lab,p]) => '<div class="row"><dt>' + lab + '</dt><dd>$' + p.amount + ' · ' + p.name + ' · ' + p.owner + '</dd></div>').join('') + '</dl></aside><p class="note">Season records stay empty until Week 1 is scored.</p>';
+      roots.records.innerHTML = '<aside class="board"><h2>Auction records</h2><dl>' + rows.filter(([,p])=>p).map(([lab,p]) => '<div class="row"><dt>' + lab + '</dt><dd>$' + p.amount + ' · ' + p.name + ' · ' + p.owner + '</dd></div>').join('') + '</dl></aside><p class="note">Weekly highs are not tracked here yet. Check the Tape.</p>';
     }
 
     const paintWeek = (title, rows, target) => {
@@ -128,14 +142,14 @@
       target.innerHTML = '<aside class="board"><h2>' + title + '</h2>' + pairs.map((pair) => {
         const a = pair[0] || {}, b = pair[1] || {};
         const A = data.mgr(a.roster_id), B = data.mgr(b.roster_id);
-        const left = A.name + (a.points ? ' · ' + a.points : '');
-        const right = B.name + (b.points ? ' · ' + b.points : '');
+        const left = A.name + (a.points ? ' · ' + Number(a.points).toFixed(1) : '');
+        const right = (b.points ? Number(b.points).toFixed(1) + ' · ' : '') + B.name;
         return '<div class="row"><dt>' + left + '</dt><dd>' + right + '</dd></div>';
       }).join('') + '</aside>';
     };
 
     if (roots.week) {
-      get('/league/' + L.sleeper.leagueId + '/matchups/1').then((rows) => paintWeek('Week 1', rows, roots.week)).catch(() => fail(roots.week));
+      window.SCARIES.week().then((w) => get('/league/' + L.sleeper.leagueId + '/matchups/' + w).then((rows) => paintWeek('Week ' + w, rows, roots.week))).catch(() => fail(roots.week));
     }
     if (roots.match) {
       const weeks = Array.from({length: 15}, (_,i) => i+1);

@@ -1,4 +1,6 @@
 window.LEAGUE = {
+  // Cache-bust value. Must match the ?v= on every page (run tools/bump-version.sh to change it everywhere).
+  cacheVersion: 14,
   name: "Sunday Scaries FFL",
   shortName: "Sunday Scaries",
   sleeperName: "Sunday scaries",
