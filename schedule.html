@@ -17,47 +17,23 @@
 <meta name="twitter:description" content="Sunday Scaries FFL strength of schedule and bye-week holes."/>
 <meta name="twitter:image" content="https://sundayscariesffl.com/download.png"/>
 <link rel="icon" href="favicon.svg" type="image/svg+xml"/>
-<link rel="stylesheet" href="styles.css?v=16"/>
+<link rel="stylesheet" href="styles.css?v=17"/>
 </head>
 <body>
 <header id="site-header"></header>
 <main class="doc">
 <p class="kicker">Bye weeks · FAAB pressure</p>
 <h1>Strength of schedule</h1>
-<p>Pairings from Sleeper. NFL byes from the 2026 schedule. The number is auction dollars on the opponent’s roster who are on bye that week. Higher means they are missing more paid talent and likely burning FAAB against you.</p>
-<p class="note">Now playing: <span data-week-label>this week</span>. This is not a power ranking.</p>
+<p>Pairings from Sleeper. NFL byes from the 2026 schedule. Rosters are today's Sleeper rosters, not draft night. Dollars are auction price; anyone added later counts $0 but still counts as a body.</p>
+<p class="note">Now playing: <span data-week-label>Week 6</span>. Not a power ranking.</p>
 
 <h2>Who faces the most bye-gutted opponents</h2>
-<aside class="board">
-<dl>
-<div class="row"><dt>Brad Bell</dt><dd>$348 opponent bye $</dd></div>
-<div class="row"><dt>Kevin Kutch</dt><dd>$312</dd></div>
-<div class="row"><dt>Barry Rockwood</dt><dd>$234</dd></div>
-<div class="row"><dt>Connor Zetsche</dt><dd>$184</dd></div>
-<div class="row"><dt>Will Maness</dt><dd>$162</dd></div>
-<div class="row"><dt>Ben Bankhead</dt><dd>$157</dd></div>
-<div class="row"><dt>Zach Cabra</dt><dd>$146</dd></div>
-<div class="row"><dt>Jacob Williamson</dt><dd>$55</dd></div>
-</dl>
-</aside>
-<p>Brad’s schedule hits Connor’s Week 6 Gibbs/Achane hole ($102), Ben’s Week 7 Cook/Hampton/Daniels hole ($95), and Kevin’s Week 11 Maye/Puka/Jacobs hole ($96). Jacob almost never catches anyone on a big bye. His opponents show up whole.</p>
+<div id="sos-opp"></div>
 
-<h2>Who has to replace the most paid talent</h2>
-<p>This is your own roster on NFL bye the week you play. That is when you spend FAAB or start a $1.</p>
-<aside class="board">
-<dl>
-<div class="row"><dt>W6 Connor vs Brad</dt><dd>Connor missing $102 · Gibbs $61, Achane $35</dd></div>
-<div class="row"><dt>W11 Kevin vs Brad</dt><dd>Kevin missing $96 · Maye $42, Puka $39, Jacobs $11</dd></div>
-<div class="row"><dt>W7 Ben vs Brad</dt><dd>Ben missing $95 · Cook $40, Hampton $29, Daniels $25</dd></div>
-<div class="row"><dt>W6 Zach vs Kevin</dt><dd>Zach missing $75 · Amon-Ra $41, Jefferson $32</dd></div>
-<div class="row"><dt>W13 Jacob vs Ben</dt><dd>Jacob missing $73 · Lamar $38, Jeanty $34</dd></div>
-<div class="row"><dt>W8 Barry vs Kevin</dt><dd>Barry missing $71 · CMC $39, Nico $19, Skattebo $13</dd></div>
-<div class="row"><dt>W14 Connor vs Will</dt><dd>Connor missing $69 · Dak $36, CeeDee $33</dd></div>
-<div class="row"><dt>W11 Brad vs Kevin</dt><dd>Brad missing $66 · Bijan $56</dd></div>
-<div class="row"><dt>W6 Will vs Barry</dt><dd>Will missing $61 · Chase $33, Chase Brown $25</dd></div>
-</dl>
-</aside>
-<p>FAAB is $100 for the year. A $90 hole is not a $90 bid. It is a week you are starting a streamer against a full roster.</p>
+<h2>Biggest bye holes left</h2>
+<p>Your own roster on NFL bye the week you play. That is when you spend FAAB or start a $1.</p>
+<div id="sos-own"></div>
+<p>FAAB is $100 for the year. A $90 hole is not a $90 bid. It is a week you start a streamer against a full roster.</p>
 <div class="cta-row">
 <a class="btn btn-gold" href="matchups.html">All weeks</a>
 <a class="btn btn-ghost" href="playoffs.html">Playoffs</a>
@@ -65,9 +41,10 @@
 </div>
 </main>
 <footer id="site-footer"></footer>
-<script src="js/league.js?v=16"></script>
-<script src="js/site.js?v=16"></script>
-<script src="js/supabase.js?v=16"></script>
-<script src="js/sleeper.js?v=16"></script>
+<script src="js/league.js?v=17"></script>
+<script src="js/site.js?v=17"></script>
+<script src="js/supabase.js?v=17"></script>
+<script src="js/sleeper.js?v=17"></script>
+<script src="js/huddle.js?v=17"></script>
 </body>
 </html>

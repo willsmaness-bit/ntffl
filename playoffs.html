@@ -17,41 +17,23 @@
 <meta name="twitter:description" content="Sunday Scaries FFL playoff picture. Top 4 make it. Semis Week 16, title Week 17."/>
 <meta name="twitter:image" content="https://sundayscariesffl.com/download.png"/>
 <link rel="icon" href="favicon.svg" type="image/svg+xml"/>
-<link rel="stylesheet" href="styles.css?v=16"/>
+<link rel="stylesheet" href="styles.css?v=17"/>
 </head>
 <body>
 <header id="site-header"></header>
 <main class="doc">
-<p class="kicker">Projection · not a bracket</p>
+<p class="kicker">Live seeds · <span data-week-label>In season</span></p>
 <h1>Playoffs</h1>
-<p>Top 4 after Week 15. Semis Week 16 (1v4, 2v3). Title Week 17. No byes. Standings are 0-0. This page is roster construction plus bye-week schedule, not predicted wins.</p>
+<p>Top 4 after Week 15. Semis Week 16 (1v4, 2v3). Title Week 17. No byes. Wins first, points for breaks ties.</p>
 
-<h2>How the four get in</h2>
-<p>Win/loss first. Points for breaks ties. Sleeper does not know about the Toilet Bowl. Seeds 1-4 are the championship field.</p>
+<div id="po-seeds"></div>
 
-<h2>Construction lean</h2>
-<p>Before a game is scored, the cleanest paths into the four look like this. That can change in one week.</p>
-<aside class="board">
-<dl>
-<div class="row"><dt>Ben Bankhead</dt><dd>No empty seat. JSN, Cook, Hampton, Daniels, Bowers.</dd></div>
-<div class="row"><dt>Jacob Williamson</dt><dd>Allen and Lamar in a superflex. Thin after Jeanty.</dd></div>
-<div class="row"><dt>Brad Bell</dt><dd>Bijan and Saquon. Also plays the three biggest bye holes.</dd></div>
-<div class="row"><dt>Connor Zetsche</dt><dd>Gibbs $61 and Achane $35. Ceiling if both hit.</dd></div>
-</dl>
-</aside>
-<p class="note">Will, Zach, Kevin, and Barry are not eliminated. They have the holes: quarterback depth, running back depth, tight end, or a one-QB roster.</p>
+<h2>The race</h2>
+<div id="po-race"></div>
 
-<h2>Bye weeks that matter for the race</h2>
-<p>Auction dollars sitting on NFL byes the week that team actually plays. Opponent starts streamers or burns FAAB.</p>
-<ul>
-<li>Week 6: Connor missing Gibbs and Achane ($102). Zach missing Amon-Ra and Jefferson ($75). Brad plays Connor. Kevin plays Zach.</li>
-<li>Week 7: Ben missing Cook, Hampton, and Daniels ($95). Jacob missing Allen ($49). Brad plays Ben.</li>
-<li>Week 8: Barry missing CMC, Nico, and Skattebo ($71). Kevin missing Purdy, Olave, and Evans ($51). They play each other.</li>
-<li>Week 11: six NFL teams off. Kevin missing Maye, Puka, and Jacobs ($96). Brad missing Bijan ($56). They play each other.</li>
-<li>Week 13: Jacob missing Lamar and Jeanty ($73) against Ben.</li>
-<li>Week 14: Connor missing Dak and CeeDee ($69) against Will.</li>
-</ul>
-<p>Full table is on the schedule page. Records stay empty until Sleeper posts a result.</p>
+<h2>Bye holes in the race</h2>
+<p>Top six teams. Auction dollars on NFL bye the week they play.</p>
+<div id="po-byes"></div>
 <div class="cta-row">
 <a class="btn btn-gold" href="schedule.html">Bye SOS</a>
 <a class="btn btn-ghost" href="toilet.html">Toilet Bowl</a>
@@ -59,7 +41,10 @@
 </div>
 </main>
 <footer id="site-footer"></footer>
-<script src="js/league.js?v=16"></script>
-<script src="js/site.js?v=16"></script>
+<script src="js/league.js?v=17"></script>
+<script src="js/site.js?v=17"></script>
+<script src="js/supabase.js?v=17"></script>
+<script src="js/sleeper.js?v=17"></script>
+<script src="js/huddle.js?v=17"></script>
 </body>
 </html>
