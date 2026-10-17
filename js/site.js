@@ -2,7 +2,7 @@
   const L = window.LEAGUE;
   const here = (location.pathname.split('/').pop() || 'index.html');
     // Title, description, canonical, OG and Twitter tags are written statically in each page's <head>.
-  const links = [['index.html','Home'],['draft.html','Draft'],['stats.html','Tape'],['teams.html','Teams'],['matchups.html','Matchups'],['standings.html','Standings'],['playoffs.html','Playoffs'],['toilet.html','Toilet'],['schedule.html','SOS'],['waivers.html','Waivers'],['rules.html','Rules'],['records.html','Records'],['gazette.html','Gazette']];
+  const links = [['index.html','Home'],['draft.html','Draft'],['stats.html','Tape'],['teams.html','Teams'],['matchups.html','Matchups'],['standings.html','Standings'],['playoffs.html','Playoffs'],['toilet.html','Toilet'],['schedule.html','SOS'],['waivers.html','Waivers'],['projections.html','Projections'],['news.html','News'],['rules.html','Rules'],['records.html','Records'],['gazette.html','Gazette']];
   const header = document.getElementById('site-header');
   if (header) {
     header.innerHTML = '<div class="bar"><a class="brand" href="/"><span class="brand-full">Sunday Scaries</span><span class="brand-short">Scaries</span><span class="subbrand">North Texas FFL</span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menu</button><nav id="nav">'+links.map(([h,l])=>'<a href="/'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
