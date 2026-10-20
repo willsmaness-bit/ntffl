@@ -54,7 +54,8 @@
   window.SCARIES.week = function () {
     if (window.SCARIES._week) return window.SCARIES._week;
     window.SCARIES._week = get('/state/nfl').then((st) => {
-      const w = Number(st.display_week || st.week);
+      // Sleeper bumps `week` to the next scoring week (Tuesday) before `display_week` catches up; use the later one.
+      const w = Math.max(Number(st.week) || 0, Number(st.display_week) || 0);
       if (!w || w < 1) throw new Error('no week');
       return Math.min(w, (L.format && L.format.championshipWeek) || 17);
     }).catch(() => 1);
@@ -89,7 +90,11 @@
       }).filter((x) => x.games.length && x.scores.some((s) => s.pts > 0));
       if (!out.length) throw new Error('supabase finals empty');
       out.source = 'Supabase';
-      return out;
+      return window.SCARIES.week().then((cur) => {
+        // Only trust Supabase if it has every week Sleeper says is done.
+        if (out[out.length - 1].wk < Math.min(cur - 1, cap)) throw new Error('supabase behind');
+        return out;
+      });
     });
   };
   window.SCARIES.finals = function () {
