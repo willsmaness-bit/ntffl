@@ -113,11 +113,11 @@
           roots.tapeWeek.innerHTML = '<h2>Week ' + last.wk + ' results</h2>' + board('', last.games.map((g) => [esc(mgrName(g.w.roster_id)) + ' ' + f2(g.w.points), esc(mgrName(g.l.roster_id)) + ' ' + f2(g.l.points)]));
         }
         if (roots.low) {
-          const rows = weeks.map((x) => { const lo = x.scores.slice().sort((a, b) => a.pts - b.pts)[0]; return ['Week ' + x.wk, esc(mgrName(lo.roster_id)) + ' · ' + f2(lo.pts)]; });
+          const rows = weeks.map((x) => { const lo = S.shotgun(x); return ['Week ' + x.wk, esc(mgrName(lo.roster_id)) + ' · ' + f2(lo.pts)]; });
           const count = {};
-          weeks.forEach((x) => { const lo = x.scores.slice().sort((a, b) => a.pts - b.pts)[0]; count[lo.roster_id] = (count[lo.roster_id] || 0) + 1; });
+          weeks.forEach((x) => { const lo = S.shotgun(x); count[lo.roster_id] = (count[lo.roster_id] || 0) + 1; });
           const tally = Object.entries(count).sort((a, b) => b[1] - a[1]).map(([rid, n]) => esc(mgrName(Number(rid))) + ' ' + n).join(', ');
-          roots.low.innerHTML = board('', rows, 'Lowest score each final week shotguns a beer. Tally: ' + tally + '.');
+          roots.low.innerHTML = board('', rows, 'Lowest score each final week shotguns a beer. Tally: ' + tally + '.' + (weeks.adjNotes || []).filter((a) => !a.shotgun).map((a) => ' Week ' + a.wk + ' shotgun uses Sleeper scores; ' + esc(mgrName(a.roster_id)) + ' has a ' + f2(a.points) + ' commissioner adjustment.').join(''));
         }
         if (roots.allplay) {
           const ap = {};
