@@ -20,12 +20,32 @@
   const teamOf = (u) => ((u.metadata || {}).team_name || '').trim();
 
   window.SCARIES = window.SCARIES || {};
+  // Commissioner adjustments (data/adjustments.json). Applied to weekly scores and PF on the site.
+  // affectsShotgun:false keeps the weekly low (shotgun) on raw Sleeper scores.
+  window.SCARIES.adjustments = function () {
+    if (window.SCARIES._adj) return window.SCARIES._adj;
+    window.SCARIES._adj = fetch('data/adjustments.json?v=' + (L.cacheVersion || 1)).then((r) => (r.ok ? r.json() : { adjustments: [] }))
+      .then((d) => ((d && d.adjustments) || []).filter((a) => !a.season || String(a.season) === String(L.season)))
+      .catch(() => []);
+    return window.SCARIES._adj;
+  };
   window.SCARIES.load = async function () {
-    const [users, rosters, picks] = await Promise.all([
+    if (window.SCARIES._load) return window.SCARIES._load;
+    window.SCARIES._load = (async () => {
+    const [users, rosters, picks, adj] = await Promise.all([
       get('/league/' + L.sleeper.leagueId + '/users'),
       get('/league/' + L.sleeper.leagueId + '/rosters'),
-      get('/draft/' + L.sleeper.draftId + '/picks')
+      get('/draft/' + L.sleeper.draftId + '/picks'),
+      window.SCARIES.adjustments()
     ]);
+    adj.forEach((a) => {
+      const r = rosters.find((x) => x.roster_id === Number(a.roster_id));
+      if (!r) return;
+      const st = r.settings = r.settings || {};
+      const cents = Math.round(((st.fpts || 0) + (st.fpts_decimal || 0) / 100 + Number(a.points || 0)) * 100);
+      st.fpts = Math.floor(cents / 100); st.fpts_decimal = cents - st.fpts * 100;
+      (r.adjustments = r.adjustments || []).push(a);
+    });
     const byId = Object.fromEntries(users.map((u) => [u.user_id, u]));
     const prices = {};
     const meta = {};
@@ -47,7 +67,9 @@
       const u = byId[r.owner_id] || {};
       return { u, name: nameOf(u), team: teamOf(u), roster: r };
     };
-    return { users, rosters, picks, byId, prices, label, nameOf, teamOf, mgr };
+    return { users, rosters, picks, byId, prices, label, nameOf, teamOf, mgr, adj };
+    })();
+    return window.SCARIES._load;
   };
 
   // Current NFL week from Sleeper. Falls back to the last week with posted matchups, then Week 1.
@@ -99,7 +121,28 @@
   };
   window.SCARIES.finals = function () {
     if (window.SCARIES._finals) return window.SCARIES._finals;
-    window.SCARIES._finals = finalsFromSupabase().catch(() => finalsFromSleeper());
+    window.SCARIES._finals = Promise.all([finalsFromSupabase().catch(() => finalsFromSleeper()), window.SCARIES.adjustments()]).then(([weeks, adj]) => {
+      adj.forEach((a) => {
+        const x = weeks.find((y) => y.wk === Number(a.week));
+        if (!x) return;
+        const rid = Number(a.roster_id), d = Number(a.points || 0);
+        x.scores.forEach((s) => {
+          if (s.roster_id !== rid) return;
+          if (s.raw == null) s.raw = s.pts;
+          s.pts = Math.round((s.pts + d) * 100) / 100;
+          if (a.affectsShotgun !== false) s.raw = s.pts;
+          s.note = a.note;
+        });
+        x.games = x.games.map((g) => {
+          [g.w, g.l].forEach((t) => { if (t.roster_id === rid) t.points = Math.round(((t.points || 0) + d) * 100) / 100; });
+          const [w, l] = [g.w, g.l].sort((m, n) => (n.points || 0) - (m.points || 0));
+          return { w, l, margin: Math.round(((w.points || 0) - (l.points || 0)) * 100) / 100 };
+        });
+        (x.notes = x.notes || []).push(a.note + ' (' + (d > 0 ? '+' : '') + d.toFixed(2) + ' to ' + rid + ')');
+        (weeks.adjNotes = weeks.adjNotes || []).push({ wk: x.wk, roster_id: rid, points: d, note: a.note, shotgun: a.affectsShotgun !== false });
+      });
+      return weeks;
+    });
     return window.SCARIES._finals;
   };
   const finalsFromSleeper = function () {
@@ -117,6 +160,12 @@
     }).filter((x) => x.scores.some((s) => s.pts > 0))).then((a) => { a.source = 'Sleeper'; return a; });
   };
 
+  // Weekly low for the shotgun: raw score unless an adjustment says it counts.
+  window.SCARIES.shotgun = function (x) {
+    const v = (s) => (s.raw != null ? s.raw : s.pts);
+    const lo = x.scores.slice().sort((a, b) => v(a) - v(b))[0];
+    return lo && { roster_id: lo.roster_id, pts: v(lo) };
+  };
   window.SCARIES.pairWeek = function (rows) {
     const by = {};
     (rows || []).forEach((row) => {
@@ -156,7 +205,7 @@
       roots.stand.innerHTML = '<aside class="board"><dl>' + rows.map((r) => {
         const s = r.settings || {};
         return '<div class="row"><dt>' + data.mgr(r.roster_id).name + '</dt><dd>' + (s.wins||0) + '-' + (s.losses||0) + (s.ties ? '-' + s.ties : '') + ' · ' + ((s.fpts||0) + (s.fpts_decimal||0)/100).toFixed(1) + ' PF</dd></div>';
-      }).join('') + '</dl></aside>';
+      }).join('') + '</dl></aside>' + (data.adj || []).map((a) => '<p class="note">* ' + data.mgr(Number(a.roster_id)).name + ' PF includes ' + Number(a.points).toFixed(2) + ' from Week ' + a.week + '. ' + a.note + '.</p>').join('');
     }
     if (roots.spend) {
       const rows = data.rosters.slice().sort((a,b) => (data.prices[b.roster_id]||0)-(data.prices[a.roster_id]||0));
@@ -217,6 +266,8 @@
     if (roots.recap || roots.season) {
       window.SCARIES.finals().then((weeks) => {
         const nm = (id) => data.mgr(id).name;
+        const adjNote = (wk) => (weeks.adjNotes || []).filter((a) => wk == null || a.wk === wk).map((a) =>
+          '<p class="note">* ' + nm(a.roster_id) + ' Week ' + a.wk + ': ' + f1(a.points) + '. ' + a.note + '.' + (a.shotgun ? '' : ' Shotgun goes by the Sleeper score.') + '</p>').join('');
         if (roots.recap) {
           if (!weeks.length) { roots.recap.innerHTML = '<p class="note">No final weeks yet.</p>'; }
           else {
@@ -233,7 +284,7 @@
             });
             roots.recap.innerHTML = weeks.slice().reverse().map((x) => {
               const s = x.scores.slice().sort((a, b) => b.pts - a.pts);
-              const hi = s[0], lo = s[s.length - 1];
+              const hi = s[0], lo = window.SCARIES.shotgun(x);
               const g = x.games.slice().sort((a, b) => b.margin - a.margin);
               const blow = g[0], close = g[g.length - 1];
               const t = tracker.find((y) => y.wk === x.wk);
@@ -243,7 +294,7 @@
                 '<div class="row"><dt>Blowout</dt><dd>' + nm(blow.w.roster_id) + ' over ' + nm(blow.l.roster_id) + ' by ' + f1(blow.margin) + '</dd></div>' +
                 '<div class="row"><dt>Closest</dt><dd>' + nm(close.w.roster_id) + ' over ' + nm(close.l.roster_id) + ' by ' + f1(close.margin) + '</dd></div>' +
                 '<div class="row"><dt>In last</dt><dd>' + nm(t.id) + ' · ' + t.r.w + '-' + t.r.l + ' · ' + f1(t.r.pf) + ' PF</dd></div>' +
-                '</dl></aside>';
+                '</dl></aside>' + adjNote(x.wk);
             }).join('');
           }
         }
@@ -265,7 +316,7 @@
             '<div class="row"><dt>Biggest margin</dt><dd>' + f1(big.margin) + ' · ' + nm(big.w.roster_id) + ' over ' + nm(big.l.roster_id) + ' · Week ' + big.wk + '</dd></div>' +
             '<div class="row"><dt>Closest game</dt><dd>' + f1(tight.margin) + ' · ' + nm(tight.w.roster_id) + ' over ' + nm(tight.l.roster_id) + ' · Week ' + tight.wk + '</dd></div>' +
             '<div class="row"><dt>Most points for</dt><dd>' + f1(top[1]) + ' · ' + nm(Number(top[0])) + '</dd></div>' +
-            '</dl></aside><p class="note">Final weeks only: 1 through ' + weeks[weeks.length - 1].wk + '. The live week counts once it goes final. Source: ' + (weeks.source || 'Sleeper') + '.</p>';
+            '</dl></aside><p class="note">Final weeks only: 1 through ' + weeks[weeks.length - 1].wk + '. The live week counts once it goes final. Source: ' + (weeks.source || 'Sleeper') + '.</p>' + adjNote();
         }
       }).catch(() => { fail(roots.recap); fail(roots.season); });
     }

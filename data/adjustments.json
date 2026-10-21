@@ -1,0 +1,13 @@
+{
+  "note": "Commissioner score adjustments applied on the site only. Sleeper is unchanged unless the commissioner edits it there.",
+  "adjustments": [
+    {
+      "season": 2026,
+      "week": 6,
+      "roster_id": 8,
+      "points": -6.0,
+      "affectsShotgun": false,
+      "note": "Commissioner adjustment: Week 6 Superflex lockout (missed chug)"
+    }
+  ]
+}
